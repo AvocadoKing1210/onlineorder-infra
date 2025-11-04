@@ -34,4 +34,3 @@ Reference: [Supabase Auth0 guide](https://supabase.com/docs/guides/auth/third-pa
 ## 4) Database initialization
 
 Please refer to the `SQL` files under `/database_setup` directry, which contains the SQL script for creating tables and assosiate RLS rules.
-
