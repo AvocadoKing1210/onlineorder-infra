@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS management_preference (
     preferred_locale TEXT NOT NULL DEFAULT 'en',
     sidebar_collapsed BOOLEAN NOT NULL DEFAULT false,
     notifications_enabled BOOLEAN NOT NULL DEFAULT true,
+    user_guide_completed BOOLEAN NOT NULL DEFAULT false,
 
     -- Flexible layout/config blob for future expansion
     layout JSONB,
