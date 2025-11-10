@@ -17,6 +17,18 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ALTER TABLE notification ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read public notifications for all customers
+CREATE POLICY "Anonymous users can read public notifications"
+    ON notification
+    FOR SELECT
+    TO anon
+    USING (
+        -- Notification must be active (published and not expired)
+        published_at <= NOW()
+        AND (expiry_at IS NULL OR expiry_at > NOW())
+        AND audience = 'all_customers' -- Only show public notifications to guests
+    );
+
 -- Policy: Customers can read active notifications (filtered by audience)
 CREATE POLICY "Customers can read active notifications"
     ON notification

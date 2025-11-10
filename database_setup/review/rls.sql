@@ -18,6 +18,13 @@ CREATE POLICY "Customers can read own reviews"
         )
     );
 
+-- Policy: Anonymous users (guests) can read approved reviews
+CREATE POLICY "Anonymous users can read approved reviews"
+    ON review
+    FOR SELECT
+    TO anon
+    USING (status = 'approved');
+
 -- Policy: Customers can read approved reviews (for any menu item)
 CREATE POLICY "Customers can read approved reviews"
     ON review
