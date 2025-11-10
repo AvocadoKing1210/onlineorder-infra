@@ -5,6 +5,25 @@
 -- Enable RLS
 ALTER TABLE promotion_category ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read categories for active promotions
+CREATE POLICY "Anonymous users can read categories for active promotions"
+    ON promotion_category
+    FOR SELECT
+    TO anon
+    USING (
+        EXISTS (
+            SELECT 1 FROM promotion p
+            WHERE p.id = promotion_category.promotion_id
+              AND p.active_from <= NOW()
+              AND (p.active_until IS NULL OR p.active_until > NOW())
+        )
+        AND EXISTS (
+            SELECT 1 FROM menu_category mc
+            WHERE mc.id = promotion_category.category_id
+              AND mc.visible = true
+        )
+    );
+
 -- Policy: Customers can read categories for active promotions
 CREATE POLICY "Customers can read categories for active promotions"
     ON promotion_category

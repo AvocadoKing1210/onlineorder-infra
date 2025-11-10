@@ -5,6 +5,13 @@
 -- Enable RLS
 ALTER TABLE menu_modifier_group ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read visible modifier groups
+CREATE POLICY "Anonymous users can read visible modifier groups"
+    ON menu_modifier_group
+    FOR SELECT
+    TO anon
+    USING (visible = true);
+
 -- Policy: Customers can read visible modifier groups
 CREATE POLICY "Customers can read visible modifier groups"
     ON menu_modifier_group

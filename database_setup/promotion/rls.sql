@@ -18,6 +18,16 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Enable RLS
 ALTER TABLE promotion ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read active promotions
+CREATE POLICY "Anonymous users can read active promotions"
+    ON promotion
+    FOR SELECT
+    TO anon
+    USING (
+        active_from <= NOW()
+        AND (active_until IS NULL OR active_until > NOW())
+    );
+
 -- Policy: Customers can read active promotions
 CREATE POLICY "Customers can read active promotions"
     ON promotion

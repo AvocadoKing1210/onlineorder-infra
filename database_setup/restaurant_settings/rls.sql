@@ -17,6 +17,14 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Enable RLS
 ALTER TABLE restaurant_settings ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read public restaurant settings
+-- This allows guests to see business info, active modes, hours, currency, etc. needed for checkout
+CREATE POLICY "Anonymous users can read restaurant settings"
+    ON restaurant_settings
+    FOR SELECT
+    TO anon
+    USING (true);
+
 -- Policy: Admin can read restaurant settings (full access)
 CREATE POLICY "Admin can read restaurant settings"
     ON restaurant_settings

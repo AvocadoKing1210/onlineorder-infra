@@ -5,6 +5,21 @@
 -- Enable RLS
 ALTER TABLE menu_modifier_option ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read visible and available options
+CREATE POLICY "Anonymous users can read available options"
+    ON menu_modifier_option
+    FOR SELECT
+    TO anon
+    USING (
+        visible = true
+        AND available = true
+        AND EXISTS (
+            SELECT 1 FROM menu_modifier_group mg
+            WHERE mg.id = menu_modifier_option.modifier_group_id
+              AND mg.visible = true
+        )
+    );
+
 -- Policy: Customers can read visible and available options
 CREATE POLICY "Customers can read available options"
     ON menu_modifier_option

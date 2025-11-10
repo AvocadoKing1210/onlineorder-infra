@@ -5,6 +5,13 @@
 -- Enable RLS
 ALTER TABLE menu_category ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read visible categories
+CREATE POLICY "Anonymous users can read visible categories"
+    ON menu_category
+    FOR SELECT
+    TO anon
+    USING (visible = true);
+
 -- Policy: Customers can read visible categories
 CREATE POLICY "Customers can read visible categories"
     ON menu_category
