@@ -8,6 +8,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE "order";
 -- Method 2: Set replica identity to FULL (Required for UPDATE/DELETE events)
 -- This ensures UPDATE and DELETE events include complete row data
 -- Without this, UPDATE events may not include all column changes
+-- This is critical for Realtime to work properly with UPDATE events
 ALTER TABLE "order" REPLICA IDENTITY FULL;
 
 -- Verify the table is added to replication
