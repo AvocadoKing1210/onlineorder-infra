@@ -33,6 +33,16 @@ CREATE POLICY "Admin can read all orders"
     TO authenticated
     USING (jwt_has_user_group('Admin'));
 
+-- Policy: Anonymous users (guests) can read orders by reference number
+-- This enables guest checkout: guests can view their order status and subscribe to Realtime updates
+-- Security: Reference numbers should be cryptographically random and hard to guess
+-- Consider adding time-based restrictions or signed tokens for production
+CREATE POLICY "Anonymous users can read orders by reference number"
+    ON "order"
+    FOR SELECT
+    TO anon
+    USING (reference_number IS NOT NULL);
+
 -- Policy: Customers can insert their own orders
 CREATE POLICY "Customers can insert own orders"
     ON "order"

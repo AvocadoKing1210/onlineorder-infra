@@ -63,6 +63,10 @@ CREATE TABLE IF NOT EXISTS "order" (
     -- Idempotency (prevent duplicate submissions)
     idempotency_key TEXT UNIQUE, -- Client-generated unique key for submission
 
+    -- Reference Number (for guest checkout and Realtime access)
+    reference_number TEXT UNIQUE, -- Server-generated reference number for order tracking
+    -- Used for: guest order lookup, Realtime subscriptions, customer-facing order ID
+
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -80,6 +84,8 @@ CREATE INDEX IF NOT EXISTS idx_order_status_submitted ON "order"(status, submitt
 CREATE INDEX IF NOT EXISTS idx_order_dining_table ON "order"(dining_table_id) WHERE dining_table_id IS NOT NULL;
 -- Index for idempotency key lookups
 CREATE INDEX IF NOT EXISTS idx_order_idempotency_key ON "order"(idempotency_key) WHERE idempotency_key IS NOT NULL;
+-- Index for reference number lookups (guest order access)
+CREATE INDEX IF NOT EXISTS idx_order_reference_number ON "order"(reference_number) WHERE reference_number IS NOT NULL;
 
 -- updated_at trigger (reuse function from restaurant_settings)
 CREATE TRIGGER update_order_updated_at
