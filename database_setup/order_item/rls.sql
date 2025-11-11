@@ -4,6 +4,20 @@
 
 ALTER TABLE order_item ENABLE ROW LEVEL SECURITY;
 
+-- Policy: Anonymous users (guests) can read order items by reference number
+-- This enables guest checkout: guests can view order items for their orders
+CREATE POLICY "Anonymous users can read order items by reference"
+    ON order_item
+    FOR SELECT
+    TO anon
+    USING (
+        EXISTS (
+            SELECT 1 FROM "order" o
+            WHERE o.id = order_item.order_id
+              AND o.reference_number IS NOT NULL
+        )
+    );
+
 -- Policy: Customers can read items from their own orders
 CREATE POLICY "Customers can read own order items"
     ON order_item
@@ -35,6 +49,20 @@ CREATE POLICY "Admin can read all order items"
     FOR SELECT
     TO authenticated
     USING (jwt_has_user_group('Admin'));
+
+-- Policy: Anonymous users (guests) can insert order items for guest orders
+-- This enables guest checkout: guests can add items to orders with reference numbers
+CREATE POLICY "Anonymous users can insert order items"
+    ON order_item
+    FOR INSERT
+    TO anon
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM "order" o
+            WHERE o.id = order_item.order_id
+              AND o.reference_number IS NOT NULL
+        )
+    );
 
 -- Policy: Customers can insert items to their own orders
 CREATE POLICY "Customers can insert own order items"

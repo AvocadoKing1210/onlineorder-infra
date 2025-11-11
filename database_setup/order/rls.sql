@@ -43,6 +43,18 @@ CREATE POLICY "Anonymous users can read orders by reference number"
     TO anon
     USING (reference_number IS NOT NULL);
 
+-- Policy: Anonymous users (guests) can insert orders for guest checkout
+-- This enables guest checkout: guests can create orders with reference numbers
+-- Security: Reference numbers must be provided and orders can only be in initial states
+CREATE POLICY "Anonymous users can insert orders"
+    ON "order"
+    FOR INSERT
+    TO anon
+    WITH CHECK (
+        status IN ('created', 'submitted') -- Can only create orders in initial states
+        AND reference_number IS NOT NULL -- Must have reference number for guest orders
+    );
+
 -- Policy: Customers can insert their own orders
 CREATE POLICY "Customers can insert own orders"
     ON "order"
