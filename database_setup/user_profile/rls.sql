@@ -47,6 +47,17 @@ CREATE POLICY "Admin can insert any profile"
     TO authenticated
     WITH CHECK (jwt_has_user_group('Admin'));
 
+-- Policy: Users can insert their own profile
+-- Note: This requires Supabase to be configured to accept Auth0 JWT tokens
+-- When using REST API directly (e.g., from Cloudflare Workers), Supabase may not
+-- automatically parse Auth0 tokens into auth.jwt(). In that case, use service_role
+-- key after validating the JWT in the worker (which is the current approach).
+CREATE POLICY "Users can insert own profile"
+    ON user_profile
+    FOR INSERT
+    TO authenticated
+    WITH CHECK (id = jwt_user_id());
+
 -- Policy: Users can update their own profile
 CREATE POLICY "Users can update own profile"
     ON user_profile
